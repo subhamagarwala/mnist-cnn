@@ -81,27 +81,7 @@ def neural_network_model(data):
 # the model that returns the logits.
 # this logits will be later passed through softmax layer
 
-'''def test_image():
-    fname = "digit5.png"
-    image = np.array(ndimage.imread(fname, flatten=True, mode='L'))
-    my_image = scipy.misc.imresize(image, size=(28,28,1))
-    #plt.imshow(my_image)
-    #image=Image.open(fname).convert('LA')
-    return my_image
-'''
 
-
-'''
-x_image=tf.reshape(x,[-1,28,28,1])
-Z3=neural_network_model(x_image)
-preds=tf.nn.softmax(Z3)
-predict=tf.argmax(preds,1)
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=Z3))
-optimizer = tf.train.AdamOptimizer().minimize(loss)
-correct=tf.equal(tf.argmax(preds,1), tf.argmax(y,1))
-accuracy=tf.reduce_mean(tf.cast(correct,'float32'))
-'''    
-    
 def train_neural_network(x):
     x_image=tf.reshape(x,[-1,28,28,1])
     Z3=neural_network_model(x_image)
@@ -125,17 +105,20 @@ def train_neural_network(x):
         
         #print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
         #my_image=test_image()
-        #save_path = saver.save(sess, "/tmp/model.ckpt")
-        #predict_op = tf.argmax(preds, 1)
-        #saver=tf.train.Saver()
-        tf.add_to_collection("predict", predict)
         #saver.save(sess, "./my_model")
-        '''predictions= predict.eval({x:mnist.test.images})
-        print('label:', mnist.test.labels[100])
-        print(predictions[100])
-        two_d = (np.reshape(mnist.test.images[100], (28, 28)) * 255).astype(np.uint8)
-        plt.imshow(two_d, interpolation='nearest')
-'''
+        #predict_op = tf.argmax(preds, 1)
+        
+        saver=tf.train.Saver()
+        tf.add_to_collection("predict", predict)
+        saver.save(sess, "/tmp/model.ckpt")
+        
+        
+        #predictions= predict.eval({x:mnist.test.images})
+        #print('label:', mnist.test.labels[100])
+        #print(predictions[100])
+        #two_d = (np.reshape(mnist.test.images[100], (28, 28)) * 255).astype(np.uint8)
+        #plt.imshow(two_d, interpolation='nearest')
+        
 train_neural_network(x)
 
 #def test_model():
@@ -160,20 +143,3 @@ with tf.Session() as sess:
 
         
 
-# Step 7: calculate accuracy with test set
-'''preds = tf.nn.softmax(Z3)
-correct_preds = tf.equal(tf.argmax(preds, 1), tf.argmax(y, 1))
-accuracy = tf.reduce_sum(tf.cast(correct_preds, tf.float32))
-
-#writer = tf.summary.FileWriter('./graphs/logreg', tf.get_default_graph())
-with tf.Session() as sess:
-   sess.run(tf.global_variables_initializer()))
-   for i in range(20000):
-        batch = mnist.train.next_batch(50)
-        if i % 100 == 0:
-            train_accuracy = accuracy.eval(feed_dict={x: batch[0], y: batch[1]})
-            print('step %d, training accuracy %g' % (i, train_accuracy))
-        optimizer.run(feed_dict={x: batch[0], y: batch[1]})
-
-        print('test accuracy %g' % accuracy.eval(feed_dict={x: mnist.test.images, y: mnist.test.labels}))
-'''
