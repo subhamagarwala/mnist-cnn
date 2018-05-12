@@ -5,14 +5,6 @@ Created on Sun Apr 22 10:06:50 2018
 @author: User
 """
 
-""" Starter code for simple logistic regression model for MNIST
-with tf.data module
-MNIST dataset: yann.lecun.com/exdb/mnist/
-Created by Chip Huyen (chiphuyen@cs.stanford.edu)
-CS20: "TensorFlow for Deep Learning Research"
-cs20.stanford.edu
-Lecture 03
-"""
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
@@ -38,14 +30,7 @@ n_test = 10000
 
 
 
-# Step 3: create weights and bias
-# w is initialized to random variables with mean of 0, stddev of 0.01
-# b is initialized to 0
-# shape of w depends on the dimension of X and Y so that Y = tf.matmul(X, w)
-# shape of b depends on Y
-#with tf.variable_scope(tf.get_variable_scope(), reuse=tf.AUTO_REUSE):    
-#W1 = tf.get_variable("W1",shape=[4,4,1,8])
-#W2 = tf.get_variable("W2",shape=[2,2,8,16], initializer=tf.contrib.layers.xavier_initializer(seed = 0))
+
 
 x = tf.placeholder(tf.float32, shape=[None, 784])
 y = tf.placeholder(tf.float32, shape=[None, 10])
@@ -61,7 +46,10 @@ W1= weight_variable([4,4,1,8])
 W2= weight_variable([2,2,8,8])
 W3=weight_variable([4,4,8,16])
 W4=weight_variable([2,2,16,16])
-    
+
+
+#Building the model and returning the 10x1 data
+
 def neural_network_model(data):
     
     Z1=tf.nn.conv2d(data,W1,strides=[1,1,1,1], padding='SAME' )
@@ -77,11 +65,9 @@ def neural_network_model(data):
     P2=tf.contrib.layers.flatten(P2)
     output=tf.contrib.layers.fully_connected(P2, 10, activation_fn=None)
     return output
-# Step 4: build model
-# the model that returns the logits.
-# this logits will be later passed through softmax layer
+  
 
-
+#Training the model
 def train_neural_network(x):
     x_image=tf.reshape(x,[-1,28,28,1])
     Z3=neural_network_model(x_image)
@@ -90,7 +76,8 @@ def train_neural_network(x):
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=Z3))
     optimizer = tf.train.AdamOptimizer().minimize(loss)
     correct=tf.equal(tf.argmax(preds,1), tf.argmax(y,1))
-    accuracy=tf.reduce_mean(tf.cast(correct,'float32'))    
+    accuracy=tf.reduce_mean(tf.cast(correct,'float32'))
+    
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         for epoch in range(1):
@@ -108,6 +95,7 @@ def train_neural_network(x):
         #saver.save(sess, "./my_model")
         #predict_op = tf.argmax(preds, 1)
         
+        #Saving the model.
         saver=tf.train.Saver()
         tf.add_to_collection("predict", predict)
         saver.save(sess, "/tmp/model.ckpt")
@@ -122,11 +110,14 @@ def train_neural_network(x):
 train_neural_network(x)
 
 #def test_model():
+
+#Here, I have wanted to use trained parameters to evaluate the test set.
+#But it is not working
 with tf.Session() as sess:
         #new_saver=tf.train.import_meta_graph("./my_model.meta")
         #new_saver.restore(sess,'./my_model')
         predict_op1 = tf.get_collection("predict")
-        #saver.restore(sess, "/tmp/model.ckpt")
+        saver.restore(sess, "/tmp/model.ckpt")
         #sess.run(tf.global_variables_initializer())
         W5=W1.eval()
         W6=W2.eval()
